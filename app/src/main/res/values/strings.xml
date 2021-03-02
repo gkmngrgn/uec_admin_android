@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">UnhandledExceptionAdmin</string>
+    <string name="app_name">UEC Admin</string>
+    <string name="button_add_time">Add countries and select time</string>
+    <string name="button_add_description">Add description</string>
+    <string name="button_add_links">Add links</string>
+    <string name="button_copy_to_clipboard">Copy to clipboard</string>
 </resources>

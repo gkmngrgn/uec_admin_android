@@ -11,10 +11,30 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/button_add_time"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Hello World!" />
+            android:text="@string/button_add_time" />
+
+        <Button
+            android:id="@+id/button_add_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_add_description" />
+
+        <Button
+            android:id="@+id/button_add_links"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_add_links" />
+
+        <Button
+            android:id="@+id/button_copy_to_clipboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_copy_to_clipboard" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
