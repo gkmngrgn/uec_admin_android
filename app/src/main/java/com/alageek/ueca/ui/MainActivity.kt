@@ -18,23 +18,32 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alageek.ueca.R
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AddCardView(text = stringResource(id = R.string.button_add_time))
-                AddCardView(text = stringResource(id = R.string.button_add_description))
-                AddCardView(text = stringResource(id = R.string.button_add_links))
-                AddButton(text = stringResource(id = R.string.button_copy_to_clipboard))
+            Column {
+                Column(
+                    modifier = Modifier
+                        .weight(8f)
+                        .absolutePadding(top = 16.dp, right = 16.dp, bottom = 0.dp, left = 16.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    AddCardView(text = stringResource(id = R.string.button_add_time))
+                    AddCardView(text = stringResource(id = R.string.button_add_description))
+                    AddCardView(text = stringResource(id = R.string.button_add_links))
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(16.dp),
+                ) {
+                    AddButton(text = stringResource(id = R.string.button_copy_to_clipboard))
+                }
             }
         }
     }
@@ -49,7 +58,7 @@ fun AddCardView(text: String) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(175.dp)
                 .padding(16.dp),
         ) {
             Text(
@@ -69,7 +78,11 @@ fun PreviewAddCardView() {
 
 @Composable
 fun AddButton(text: String) {
-    Button(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
-        Text(text = text)
+    Button(
+        onClick = { /*TODO*/ },
+        modifier = Modifier
+            .fillMaxSize(),
+    ) {
+        Text(text = text.toUpperCase(Locale.ROOT))
     }
 }
