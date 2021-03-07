@@ -4,7 +4,12 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,48 +27,49 @@ class MainActivity : AppCompatActivity() {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                ButtonTime()
-                Spacer(modifier = Modifier.size(16.dp))
-                ButtonDescription()
-                Spacer(modifier = Modifier.size(16.dp))
-                ButtonLink()
-                Greeting(name = "Android")
+                AddCardView(text = stringResource(id = R.string.button_add_time))
+                AddCardView(text = stringResource(id = R.string.button_add_description))
+                AddCardView(text = stringResource(id = R.string.button_add_links))
+                AddButton(text = stringResource(id = R.string.button_copy_to_clipboard))
             }
         }
     }
 }
 
 @Composable
-fun ButtonTime() {
-    Button(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
-        Text(text = stringResource(id = R.string.button_add_time))
+fun AddCardView(text: String) {
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        backgroundColor = MaterialTheme.colors.secondary
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(16.dp),
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.h5
+            )
+        }
     }
-}
-
-@Composable
-fun ButtonDescription() {
-    Button(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
-        Text(text = stringResource(id = R.string.button_add_description))
-    }
-}
-
-@Composable
-fun ButtonLink() {
-    Button(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
-        Text(text = stringResource(id = R.string.button_add_links))
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+    Spacer(modifier = Modifier.size(16.dp))
 }
 
 @Preview
 @Composable
-fun PreviewGreeting() {
-    Greeting(name = "Android")
+fun PreviewAddCardView() {
+    AddCardView(text = "This is a card view.")
+}
+
+@Composable
+fun AddButton(text: String) {
+    Button(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
+        Text(text = text)
+    }
 }
