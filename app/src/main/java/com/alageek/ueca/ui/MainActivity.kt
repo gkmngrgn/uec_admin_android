@@ -1,8 +1,10 @@
 package com.alageek.ueca.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.alageek.ueca.R
 import java.util.*
 
+private const val TAG = "MainActivity"
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,9 +37,17 @@ class MainActivity : AppCompatActivity() {
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AddCardView(text = stringResource(id = R.string.button_add_time))
-                    AddCardView(text = stringResource(id = R.string.button_add_description))
-                    AddCardView(text = stringResource(id = R.string.button_add_links))
+                    AddCardView(text = stringResource(id = R.string.button_add_time), onClick = {
+                        Log.i(TAG, "BUTTON 1")
+                    })
+                    AddCardView(
+                        text = stringResource(id = R.string.button_add_description),
+                        onClick = {
+                            Log.i(TAG, "BUTTON 2")
+                        })
+                    AddCardView(text = stringResource(id = R.string.button_add_links), onClick = {
+                        Log.i(TAG, "BUTTON 3")
+                    })
                 }
                 Column(
                     modifier = Modifier
@@ -50,10 +62,13 @@ class MainActivity : AppCompatActivity() {
 }
 
 @Composable
-fun AddCardView(text: String) {
+fun AddCardView(text: String, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = MaterialTheme.colors.secondary
+        backgroundColor = MaterialTheme.colors.secondary,
+        modifier = Modifier.clickable {
+            onClick()
+        }
     ) {
         Box(
             modifier = Modifier
@@ -73,7 +88,7 @@ fun AddCardView(text: String) {
 @Preview
 @Composable
 fun PreviewAddCardView() {
-    AddCardView(text = "This is a card view.")
+    AddCardView(text = "This is a card view.", onClick = {})
 }
 
 @Composable
