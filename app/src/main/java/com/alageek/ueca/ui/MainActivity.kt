@@ -56,8 +56,9 @@ fun MainApp() {
 }
 
 @Composable
-fun AppContent(parentNavHostController: NavHostController) {
+fun AppContent(parentNavHostController: NavHostController) = AppTheme {
     Column {
+        TopBar(title = R.string.title_default)
         Column(
             modifier = Modifier
                 .weight(8f)
@@ -91,24 +92,39 @@ fun AppContent(parentNavHostController: NavHostController) {
 }
 
 @Composable
-fun EditTimeContent() {
-    Surface(modifier = Modifier.fillMaxSize()) {
+fun EditTimeContent() = AppTheme {
+    Scaffold(topBar = {
+        TopBar(title = R.string.title_time)
+    }) {
         Text(text = "Edit Time Content")
     }
 }
 
 @Composable
-fun EditDescriptionContent() {
-    Surface(modifier = Modifier.fillMaxSize()) {
+fun EditDescriptionContent() = AppTheme {
+    Scaffold(
+        topBar = {
+            TopBar(title = R.string.title_description)
+        }
+    ) {
         Text(text = "Edit Description Content")
     }
 }
 
 @Composable
-fun EditLinksContent() {
-    Surface(modifier = Modifier.fillMaxSize()) {
+fun EditLinksContent() = AppTheme {
+    Scaffold(
+        topBar = {
+            TopBar(title = R.string.title_links)
+        }
+    ) {
         Text(text = "Edit Links Content")
     }
+}
+
+@Composable
+fun TopBar(title: Int) {
+    TopAppBar(title = { Text(stringResource(title)) })
 }
 
 @Composable
