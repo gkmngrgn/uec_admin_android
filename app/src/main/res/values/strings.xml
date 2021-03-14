@@ -8,4 +8,5 @@
     <string name="title_description">Description</string>
     <string name="title_time">Countries and Times</string>
     <string name="title_links">Links</string>
+    <string name="desc_back">Back</string>
 </resources>

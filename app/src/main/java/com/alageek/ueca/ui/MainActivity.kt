@@ -10,6 +10,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,22 +43,22 @@ fun MainApp() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "main") {
         composable("main") {
-            AppContent(parentNavHostController = navController)
+            AppContent(navController = navController)
         }
         composable("edit_time") {
-            EditTimeContent()
+            EditTimeContent(navController = navController)
         }
         composable("edit_description") {
-            EditDescriptionContent()
+            EditDescriptionContent(navController = navController)
         }
         composable("edit_links") {
-            EditLinksContent()
+            EditLinksContent(navController = navController)
         }
     }
 }
 
 @Composable
-fun AppContent(parentNavHostController: NavHostController) = AppTheme {
+fun AppContent(navController: NavHostController) = AppTheme {
     Column {
         TopBar(title = R.string.title_default)
         Column(
@@ -67,17 +69,17 @@ fun AppContent(parentNavHostController: NavHostController) = AppTheme {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AddCardView(text = stringResource(id = R.string.button_add_time), onClick = {
-                parentNavHostController.navigate("edit_time")
+                navController.navigate("edit_time")
                 Log.i(TAG, "BUTTON 1")
             })
             AddCardView(
                 text = stringResource(id = R.string.button_add_description),
                 onClick = {
-                    parentNavHostController.navigate("edit_description")
+                    navController.navigate("edit_description")
                     Log.i(TAG, "BUTTON 2")
                 })
             AddCardView(text = stringResource(id = R.string.button_add_links), onClick = {
-                parentNavHostController.navigate("edit_links")
+                navController.navigate("edit_links")
                 Log.i(TAG, "BUTTON 3")
             })
         }
@@ -92,19 +94,26 @@ fun AppContent(parentNavHostController: NavHostController) = AppTheme {
 }
 
 @Composable
-fun EditTimeContent() = AppTheme {
-    Scaffold(topBar = {
-        TopBar(title = R.string.title_time)
-    }) {
+fun EditTimeContent(navController: NavHostController) = AppTheme {
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = R.string.title_time,
+                navButton = { BackButton(navController = navController) })
+        }
+    ) {
         Text(text = "Edit Time Content")
     }
 }
 
 @Composable
-fun EditDescriptionContent() = AppTheme {
+fun EditDescriptionContent(navController: NavHostController) = AppTheme {
     Scaffold(
         topBar = {
-            TopBar(title = R.string.title_description)
+            TopBar(
+                title = R.string.title_description,
+                navButton = { BackButton(navController = navController) })
+
         }
     ) {
         Text(text = "Edit Description Content")
@@ -112,10 +121,12 @@ fun EditDescriptionContent() = AppTheme {
 }
 
 @Composable
-fun EditLinksContent() = AppTheme {
+fun EditLinksContent(navController: NavHostController) = AppTheme {
     Scaffold(
         topBar = {
-            TopBar(title = R.string.title_links)
+            TopBar(
+                title = R.string.title_links,
+                navButton = { BackButton(navController = navController) })
         }
     ) {
         Text(text = "Edit Links Content")
@@ -123,9 +134,23 @@ fun EditLinksContent() = AppTheme {
 }
 
 @Composable
-fun TopBar(title: Int) {
-    TopAppBar(title = { Text(stringResource(title)) })
+fun TopBar(title: Int, navButton: @Composable (() -> Unit)? = null) {
+    TopAppBar(
+        title = { Text(stringResource(title)) },
+        navigationIcon = navButton,
+    )
 }
+
+@Composable
+fun BackButton(navController: NavHostController) = IconButton(onClick = {
+    navController.popBackStack()
+}) {
+    Icon(
+        imageVector = Icons.Filled.ArrowBack,
+        contentDescription = stringResource(R.string.desc_back)
+    )
+}
+
 
 @Composable
 fun AddCardView(text: String, onClick: () -> Unit) {
