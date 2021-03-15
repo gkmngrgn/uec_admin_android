@@ -13,6 +13,9 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
 import com.alageek.ueca.R
+import com.alageek.ueca.models.Event
 import java.util.*
 
 private const val TAG = "MainActivity"
@@ -107,16 +111,21 @@ fun EditTimeContent(navController: NavHostController) = AppTheme {
 }
 
 @Composable
-fun EditDescriptionContent(navController: NavHostController) = AppTheme {
+fun EditDescriptionContent(
+    navController: NavHostController
+) = AppTheme {
+    val event by rememberSaveable { mutableStateOf(Event(description = "")) }
     Scaffold(
         topBar = {
             TopBar(
                 title = R.string.title_description,
                 navButton = { BackButton(navController = navController) })
-
         }
     ) {
-        Text(text = "Edit Description Content")
+        DescriptionTextField(
+            description = event.description,
+            onDescriptionChange = { event.description = it },
+        )
     }
 }
 
@@ -150,7 +159,6 @@ fun BackButton(navController: NavHostController) = IconButton(onClick = {
         contentDescription = stringResource(R.string.desc_back)
     )
 }
-
 
 @Composable
 fun AddCardView(text: String, onClick: () -> Unit) {
@@ -191,4 +199,26 @@ fun AddButton(text: String) {
     ) {
         Text(text = text.toUpperCase(Locale.ROOT))
     }
+}
+
+@Composable
+fun DescriptionTextField(description: String, onDescriptionChange: (String) -> Unit) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(
+            text = description,
+            modifier = Modifier.padding(bottom = 8.dp),
+            style = MaterialTheme.typography.h5
+        )
+        OutlinedTextField(
+            value = description,
+            onValueChange = { onDescriptionChange(it) },
+            label = { Text("Description") }
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewDescriptionTextField() {
+    DescriptionTextField(description = "A description test.", onDescriptionChange = {})
 }
