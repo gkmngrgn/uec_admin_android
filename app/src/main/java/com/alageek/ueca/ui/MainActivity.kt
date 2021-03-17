@@ -28,6 +28,7 @@ import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
 import com.alageek.ueca.R
 import com.alageek.ueca.models.Event
+import com.alageek.ueca.models.EventSaver
 import java.util.*
 
 private const val TAG = "MainActivity"
@@ -111,10 +112,8 @@ fun EditTimeContent(navController: NavHostController) = AppTheme {
 }
 
 @Composable
-fun EditDescriptionContent(
-    navController: NavHostController
-) = AppTheme {
-    val event by rememberSaveable { mutableStateOf(Event(description = "")) }
+fun EditDescriptionContent(navController: NavHostController) = AppTheme {
+    val event by rememberSaveable(stateSaver = EventSaver) { mutableStateOf(Event()) }
     Scaffold(
         topBar = {
             TopBar(
@@ -123,7 +122,7 @@ fun EditDescriptionContent(
         }
     ) {
         DescriptionTextField(
-            description = event.description,
+            event = event,
             onDescriptionChange = { event.description = it },
         )
     }
@@ -202,15 +201,15 @@ fun AddButton(text: String) {
 }
 
 @Composable
-fun DescriptionTextField(description: String, onDescriptionChange: (String) -> Unit) {
+fun DescriptionTextField(event: Event, onDescriptionChange: (String) -> Unit) {
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
-            text = description,
+            text = event.description,
             modifier = Modifier.padding(bottom = 8.dp),
             style = MaterialTheme.typography.h5
         )
         OutlinedTextField(
-            value = description,
+            value = event.description,
             onValueChange = { onDescriptionChange(it) },
             label = { Text("Description") }
         )
@@ -220,5 +219,6 @@ fun DescriptionTextField(description: String, onDescriptionChange: (String) -> U
 @Preview
 @Composable
 fun PreviewDescriptionTextField() {
-    DescriptionTextField(description = "A description test.", onDescriptionChange = {})
+    val event = Event("A description test.")
+    DescriptionTextField(event = event, onDescriptionChange = {})
 }
