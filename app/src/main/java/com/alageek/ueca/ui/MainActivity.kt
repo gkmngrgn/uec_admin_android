@@ -12,9 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +44,8 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun MainApp() {
     val navController = rememberNavController()
+    val event by rememberSaveable(stateSaver = EventSaver) { mutableStateOf(Event()) }
+
     NavHost(navController = navController, startDestination = "main") {
         composable("main") {
             AppContent(navController = navController)
@@ -54,7 +54,7 @@ fun MainApp() {
             EditTimeContent(navController = navController)
         }
         composable("edit_description") {
-            EditDescriptionContent(navController = navController)
+            EditDescriptionContent(navController = navController, event = event)
         }
         composable("edit_links") {
             EditLinksContent(navController = navController)
@@ -112,19 +112,20 @@ fun EditTimeContent(navController: NavHostController) = AppTheme {
 }
 
 @Composable
-fun EditDescriptionContent(navController: NavHostController) = AppTheme {
-    val event by rememberSaveable(stateSaver = EventSaver) { mutableStateOf(Event()) }
+fun EditDescriptionContent(navController: NavHostController, event: Event) = AppTheme {
+    var description by remember { mutableStateOf(event.description) }
+
     Scaffold(
         topBar = {
             TopBar(
                 title = R.string.title_description,
-                navButton = { BackButton(navController = navController) })
+                navButton = {
+                    event.description = description
+                    BackButton(navController = navController)
+                })
         }
     ) {
-        DescriptionTextField(
-            event = event,
-            onDescriptionChange = { event.description = it },
-        )
+        DescriptionTextField(description = description, onValueChange = { description = it })
     }
 }
 
@@ -201,17 +202,17 @@ fun AddButton(text: String) {
 }
 
 @Composable
-fun DescriptionTextField(event: Event, onDescriptionChange: (String) -> Unit) {
+fun DescriptionTextField(description: String, onValueChange: (String) -> Unit) {
     Column(modifier = Modifier.padding(16.dp)) {
+        TextField(
+            value = description,
+            modifier = Modifier.fillMaxWidth(),
+            onValueChange = { onValueChange(it) },
+        )
         Text(
-            text = event.description,
+            text = description,
             modifier = Modifier.padding(bottom = 8.dp),
             style = MaterialTheme.typography.h5
-        )
-        OutlinedTextField(
-            value = event.description,
-            onValueChange = { onDescriptionChange(it) },
-            label = { Text("Description") }
         )
     }
 }
@@ -219,6 +220,5 @@ fun DescriptionTextField(event: Event, onDescriptionChange: (String) -> Unit) {
 @Preview
 @Composable
 fun PreviewDescriptionTextField() {
-    val event = Event("A description test.")
-    DescriptionTextField(event = event, onDescriptionChange = {})
+    DescriptionTextField(description = "A description test.", onValueChange = {})
 }
