@@ -13,20 +13,31 @@ import com.alageek.ueca.R
 fun AppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     val colors = when (darkTheme) {
         true -> darkColors(
-
+            primary = colorResource(id = R.color.color_2),
+            primaryVariant = colorResource(id = R.color.color_1),
+            secondary = colorResource(id = R.color.color_3),
+            secondaryVariant = colorResource(id = R.color.color_4),
+            background = colorResource(id = R.color.color_1),
+            surface = colorResource(id = R.color.color_1),
+            error = colorResource(id = R.color.color_5),
+            onPrimary = colorResource(id = R.color.color_8),
+            onSecondary = colorResource(id = R.color.color_7),
+            onBackground = colorResource(id = R.color.color_8),
+            onSurface = colorResource(id = R.color.color_8),
+            onError = colorResource(id = R.color.color_1),
         )
         else -> lightColors(
-            primary = colorResource(id = R.color.color_8),
-            primaryVariant = colorResource(id = R.color.color_7),
+            primary = colorResource(id = R.color.color_6),
+            primaryVariant = colorResource(id = R.color.color_4),
             secondary = colorResource(id = R.color.color_7),
-            secondaryVariant = colorResource(id = R.color.color_6),
+            secondaryVariant = colorResource(id = R.color.color_5),
             background = colorResource(id = R.color.color_8),
             surface = colorResource(id = R.color.color_8),
             error = colorResource(id = R.color.color_4),
-            onPrimary = colorResource(id = R.color.color_2),
-            onSecondary = colorResource(id = R.color.color_2),
-            onBackground = colorResource(id = R.color.color_2),
-            onSurface = colorResource(id = R.color.color_2),
+            onPrimary = colorResource(id = R.color.color_3),
+            onSecondary = colorResource(id = R.color.color_4),
+            onBackground = colorResource(id = R.color.color_1),
+            onSurface = colorResource(id = R.color.color_1),
             onError = colorResource(id = R.color.color_8),
         )
     }
