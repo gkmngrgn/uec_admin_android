@@ -1,0 +1,14 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.Ueca" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/color_8</item>
+        <item name="colorPrimaryVariant">@color/color_5</item>
+        <item name="colorSecondary">@color/color_7</item>
+        <item name="colorSecondaryVariant">@color/color_6</item>
+        <item name="colorOnPrimary">@color/color_2</item>
+        <item name="colorOnSecondary">@color/color_2</item>
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:navigationBarColor" tools:targetApi="1">?attr/colorPrimaryVariant</item>
+    </style>
+
+</resources>
