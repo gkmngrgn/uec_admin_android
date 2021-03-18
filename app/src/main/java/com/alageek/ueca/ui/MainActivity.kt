@@ -48,7 +48,7 @@ fun MainApp() {
 
     NavHost(navController = navController, startDestination = "main") {
         composable("main") {
-            AppContent(navController = navController)
+            AppContent(navController = navController, event = event)
         }
         composable("edit_time") {
             EditTimeContent(navController = navController)
@@ -63,7 +63,7 @@ fun MainApp() {
 }
 
 @Composable
-fun AppContent(navController: NavHostController) = AppTheme {
+fun AppContent(navController: NavHostController, event: Event) = AppTheme {
     Column {
         TopBar(title = R.string.title_default)
         Column(
@@ -73,20 +73,27 @@ fun AppContent(navController: NavHostController) = AppTheme {
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AddCardView(text = stringResource(id = R.string.button_add_time), onClick = {
-                navController.navigate("edit_time")
-                Log.i(TAG, "BUTTON 1")
-            })
             AddCardView(
-                text = stringResource(id = R.string.button_add_description),
+                title = stringResource(id = R.string.button_add_time),
+                text = "EDIT TIME",
+                onClick = {
+                    navController.navigate("edit_time")
+                    Log.i(TAG, "BUTTON 1")
+                })
+            AddCardView(
+                title = stringResource(id = R.string.button_add_description),
+                text = event.description,
                 onClick = {
                     navController.navigate("edit_description")
                     Log.i(TAG, "BUTTON 2")
                 })
-            AddCardView(text = stringResource(id = R.string.button_add_links), onClick = {
-                navController.navigate("edit_links")
-                Log.i(TAG, "BUTTON 3")
-            })
+            AddCardView(
+                title = stringResource(id = R.string.button_add_links),
+                text = "EDIT LINKS",
+                onClick = {
+                    navController.navigate("edit_links")
+                    Log.i(TAG, "BUTTON 3")
+                })
         }
         Column(
             modifier = Modifier
@@ -161,7 +168,7 @@ fun BackButton(navController: NavHostController) = IconButton(onClick = {
 }
 
 @Composable
-fun AddCardView(text: String, onClick: () -> Unit) {
+fun AddCardView(title: String, text: String, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.secondary,
@@ -175,10 +182,10 @@ fun AddCardView(text: String, onClick: () -> Unit) {
                 .height(175.dp)
                 .padding(16.dp),
         ) {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.h5
-            )
+            Column {
+                Text(text = title, style = MaterialTheme.typography.h5)
+                Text(text = text, style = MaterialTheme.typography.body1)
+            }
         }
     }
     Spacer(modifier = Modifier.size(16.dp))
@@ -187,7 +194,7 @@ fun AddCardView(text: String, onClick: () -> Unit) {
 @Preview
 @Composable
 fun PreviewAddCardView() {
-    AddCardView(text = "This is a card view.", onClick = {})
+    AddCardView(title = "Title", text = "This is a card view.", onClick = {})
 }
 
 @Composable
