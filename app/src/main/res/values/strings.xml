@@ -1,12 +1,10 @@
 <resources>
     <string name="app_name">UEC Admin</string>
-    <string name="button_add_time">Add countries and select time</string>
-    <string name="button_add_description">Add description</string>
-    <string name="button_add_links">Add links</string>
     <string name="button_copy_to_clipboard">Copy to clipboard</string>
     <string name="title_default">UEC Admin</string>
     <string name="title_description">Description</string>
-    <string name="title_time">Countries and Times</string>
+    <string name="title_time">Time</string>
     <string name="title_links">Links</string>
     <string name="desc_back">Back</string>
+    <string name="default_description">We will be live today; you are all invited!</string>
 </resources>

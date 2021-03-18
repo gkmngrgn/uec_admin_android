@@ -29,9 +29,6 @@ import com.alageek.ueca.models.Event
 import com.alageek.ueca.models.EventSaver
 import java.util.*
 
-private const val TAG = "MainActivity"
-
-
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +48,7 @@ fun MainApp() {
             AppContent(navController = navController, event = event)
         }
         composable("edit_time") {
-            EditTimeContent(navController = navController)
+            EditTimeContent(navController = navController, event = event)
         }
         composable("edit_description") {
             EditDescriptionContent(navController = navController, event = event)
@@ -64,36 +61,31 @@ fun MainApp() {
 
 @Composable
 fun AppContent(navController: NavHostController, event: Event) = AppTheme {
+    if (event.description.isEmpty()) {
+        event.description = stringResource(id = R.string.default_description)
+    }
+
     Column {
         TopBar(title = R.string.title_default)
         Column(
             modifier = Modifier
                 .weight(8f)
-                .absolutePadding(top = 16.dp, right = 16.dp, bottom = 0.dp, left = 16.dp)
+                .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AddCardView(
-                title = stringResource(id = R.string.button_add_time),
-                text = "EDIT TIME",
-                onClick = {
-                    navController.navigate("edit_time")
-                    Log.i(TAG, "BUTTON 1")
-                })
-            AddCardView(
-                title = stringResource(id = R.string.button_add_description),
+                title = stringResource(id = R.string.title_description),
                 text = event.description,
-                onClick = {
-                    navController.navigate("edit_description")
-                    Log.i(TAG, "BUTTON 2")
-                })
+                onClick = { navController.navigate("edit_description") })
             AddCardView(
-                title = stringResource(id = R.string.button_add_links),
+                title = stringResource(id = R.string.title_time),
+                text = "EDIT TIME",
+                onClick = { navController.navigate("edit_time") })
+            AddCardView(
+                title = stringResource(id = R.string.title_links),
                 text = "EDIT LINKS",
-                onClick = {
-                    navController.navigate("edit_links")
-                    Log.i(TAG, "BUTTON 3")
-                })
+                onClick = { navController.navigate("edit_links") })
         }
         Column(
             modifier = Modifier
@@ -102,19 +94,6 @@ fun AppContent(navController: NavHostController, event: Event) = AppTheme {
         ) {
             AddButton(text = stringResource(id = R.string.button_copy_to_clipboard))
         }
-    }
-}
-
-@Composable
-fun EditTimeContent(navController: NavHostController) = AppTheme {
-    Scaffold(
-        topBar = {
-            TopBar(
-                title = R.string.title_time,
-                navButton = { BackButton(navController = navController) })
-        }
-    ) {
-        Text(text = "Edit Time Content")
     }
 }
 
@@ -133,6 +112,21 @@ fun EditDescriptionContent(navController: NavHostController, event: Event) = App
         }
     ) {
         DescriptionTextField(description = description, onValueChange = { description = it })
+    }
+}
+
+@Composable
+fun EditTimeContent(navController: NavHostController, event: Event) = AppTheme {
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = R.string.title_time,
+                navButton = { BackButton(navController = navController) })
+        }
+    ) {
+        Column(modifier=Modifier.padding(16.dp)) {
+            Text(text = "Edit Time Content")
+        }
     }
 }
 
@@ -213,14 +207,14 @@ fun DescriptionTextField(description: String, onValueChange: (String) -> Unit) {
     Column(modifier = Modifier.padding(16.dp)) {
         TextField(
             value = description,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize(),
             onValueChange = { onValueChange(it) },
         )
-        Text(
-            text = description,
-            modifier = Modifier.padding(bottom = 8.dp),
-            style = MaterialTheme.typography.h5
-        )
+        Box(modifier = Modifier
+            .weight(1f)
+            .fillMaxSize())
     }
 }
 
