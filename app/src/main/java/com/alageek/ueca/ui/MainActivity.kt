@@ -19,6 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -31,6 +32,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.datetime.timePicker
 import com.alageek.ueca.R
 import com.alageek.ueca.models.Event
 import com.alageek.ueca.models.EventSaver
@@ -57,22 +60,25 @@ fun MainApp() {
 
     NavHost(navController = navController, startDestination = "main") {
         composable("main") {
-            AppContent(navController = navController, event = event)
+            MainContent(navController = navController, event = event)
         }
         composable("edit_time") {
-            EditTimeContent(navController = navController, event = event)
+            TimeContent(navController = navController, event = event)
+        }
+        composable("edit_timezones") {
+            TimezoneContent(navController = navController, event = event)
         }
         composable("edit_description") {
-            EditDescriptionContent(navController = navController, event = event)
+            DescriptionContent(navController = navController, event = event)
         }
         composable("edit_links") {
-            EditLinksContent(navController = navController)
+            LinksContent(navController = navController)
         }
     }
 }
 
 @Composable
-fun AppContent(navController: NavHostController, event: Event) = AppTheme {
+fun MainContent(navController: NavHostController, event: Event) = AppTheme {
     if (event.description.isEmpty()) {
         event.description = stringResource(id = R.string.default_description)
     }
@@ -110,7 +116,7 @@ fun AppContent(navController: NavHostController, event: Event) = AppTheme {
 }
 
 @Composable
-fun EditDescriptionContent(navController: NavHostController, event: Event) = AppTheme {
+fun DescriptionContent(navController: NavHostController, event: Event) = AppTheme {
     var description by remember { mutableStateOf(event.description) }
 
     Scaffold(
@@ -128,17 +134,17 @@ fun EditDescriptionContent(navController: NavHostController, event: Event) = App
 }
 
 @Composable
-fun EditTimeContent(navController: NavHostController, event: Event) = AppTheme {
+fun TimeContent(navController: NavHostController, event: Event) = AppTheme {
     Scaffold(
         topBar = {
             TopBar(
                 title = R.string.title_time,
                 navButton = { BackButton(navController = navController) },
                 actions = {
-                    IconButton(onClick = { /* TODO */ }) {
+                    IconButton(onClick = { navController.navigate("edit_timezones") }) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(R.string.desc_back)
+                            contentDescription = stringResource(R.string.desc_timezone)
                         )
                     }
                 }
@@ -156,7 +162,21 @@ fun EditTimeContent(navController: NavHostController, event: Event) = AppTheme {
 }
 
 @Composable
-fun EditLinksContent(navController: NavHostController) = AppTheme {
+fun TimezoneContent(navController: NavHostController, event: Event) = AppTheme {
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = R.string.title_timezone,
+                navButton = { BackButton(navController = navController) }
+            )
+        }
+    ) {
+        Text("not ready yet.")
+    }
+}
+
+@Composable
+fun LinksContent(navController: NavHostController) = AppTheme {
     Scaffold(
         topBar = {
             TopBar(
@@ -246,13 +266,21 @@ fun TimeBox(value: Int) {
 @Composable
 fun TimeView(time: Date) {
     val calendar = Calendar.getInstance()
+    val context = LocalContext.current
+
     calendar.time = time
     Log.i(TAG, "Currrent time is: ${calendar.time}")
+
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(modifier = Modifier
             .align(Alignment.CenterHorizontally)
             .clickable {
-                Log.i(TAG, "Time clicked!")
+                MaterialDialog(context).show {
+                    timePicker { _, _ ->
+                        Log.i(TAG, "I am here.")
+                    }
+                }
             }) {
             TimeBox(calendar.get(Calendar.HOUR_OF_DAY))
             Text(

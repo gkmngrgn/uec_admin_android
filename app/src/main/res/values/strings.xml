@@ -7,4 +7,8 @@
     <string name="title_links">Links</string>
     <string name="desc_back">Back</string>
     <string name="default_description">We will be live today; you are all invited!</string>
+    <string name="title_timezone">Timezones</string>
+    <string name="title_about">About UECA</string>
+    <string name="desc_about">About UECA</string>
+    <string name="desc_timezone">Edit Timezones</string>
 </resources>
