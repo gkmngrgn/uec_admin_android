@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -132,7 +133,16 @@ fun EditTimeContent(navController: NavHostController, event: Event) = AppTheme {
         topBar = {
             TopBar(
                 title = R.string.title_time,
-                navButton = { BackButton(navController = navController) })
+                navButton = { BackButton(navController = navController) },
+                actions = {
+                    IconButton(onClick = { /* TODO */ }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(R.string.desc_back)
+                        )
+                    }
+                }
+            )
         }
     ) {
         Column(
@@ -159,10 +169,19 @@ fun EditLinksContent(navController: NavHostController) = AppTheme {
 }
 
 @Composable
-fun TopBar(title: Int, navButton: @Composable (() -> Unit)? = null) {
+fun TopBar(
+    title: Int,
+    navButton: @Composable (() -> Unit)? = null,
+    actions: @Composable (() -> Unit)? = null,
+) {
     TopAppBar(
         title = { Text(stringResource(title)) },
         navigationIcon = navButton,
+        actions = {
+            if (actions != null) {
+                actions()
+            }
+        }
     )
 }
 
