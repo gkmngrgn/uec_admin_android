@@ -1,13 +1,14 @@
 package com.alageek.ueca.models
 
 import android.os.Parcelable
-import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
 import kotlinx.parcelize.Parcelize
+import java.util.*
 
 @Parcelize
-data class Event(var description: String = "") : Parcelable
+data class Event(var description: String = "", var time: Date) : Parcelable
 
-val EventSaver = Saver<Event, String>(
-    save = { it.description },
-    restore = { Event(it) }
+val EventSaver = listSaver<Event, Any>(
+    save = { listOf(it.description, it.time) },
+    restore = { Event(it[0] as String, it[1] as Date) }
 )

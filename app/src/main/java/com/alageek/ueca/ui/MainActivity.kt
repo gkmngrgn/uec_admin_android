@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,9 +17,14 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,6 +34,9 @@ import com.alageek.ueca.R
 import com.alageek.ueca.models.Event
 import com.alageek.ueca.models.EventSaver
 import java.util.*
+
+const val TAG = "MainActivity"
+val DEFAULT_PADDING = 16.dp
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +50,9 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun MainApp() {
     val navController = rememberNavController()
-    val event by rememberSaveable(stateSaver = EventSaver) { mutableStateOf(Event()) }
+    val event by rememberSaveable(stateSaver = EventSaver) {
+        mutableStateOf(Event(time = Calendar.getInstance().time))
+    }
 
     NavHost(navController = navController, startDestination = "main") {
         composable("main") {
@@ -70,19 +81,19 @@ fun AppContent(navController: NavHostController, event: Event) = AppTheme {
         Column(
             modifier = Modifier
                 .weight(8f)
-                .padding(16.dp)
+                .padding(DEFAULT_PADDING)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AddCardView(
+            CardView(
                 title = stringResource(id = R.string.title_description),
                 text = event.description,
                 onClick = { navController.navigate("edit_description") })
-            AddCardView(
+            CardView(
                 title = stringResource(id = R.string.title_time),
                 text = "EDIT TIME",
                 onClick = { navController.navigate("edit_time") })
-            AddCardView(
+            CardView(
                 title = stringResource(id = R.string.title_links),
                 text = "EDIT LINKS",
                 onClick = { navController.navigate("edit_links") })
@@ -90,7 +101,7 @@ fun AppContent(navController: NavHostController, event: Event) = AppTheme {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(16.dp),
+                .padding(DEFAULT_PADDING),
         ) {
             AddButton(text = stringResource(id = R.string.button_copy_to_clipboard))
         }
@@ -124,8 +135,12 @@ fun EditTimeContent(navController: NavHostController, event: Event) = AppTheme {
                 navButton = { BackButton(navController = navController) })
         }
     ) {
-        Column(modifier=Modifier.padding(16.dp)) {
-            Text(text = "Edit Time Content")
+        Column(
+            modifier = Modifier
+                .padding(DEFAULT_PADDING)
+                .fillMaxSize()
+        ) {
+            TimeView(time = event.time)
         }
     }
 }
@@ -162,7 +177,7 @@ fun BackButton(navController: NavHostController) = IconButton(onClick = {
 }
 
 @Composable
-fun AddCardView(title: String, text: String, onClick: () -> Unit) {
+fun CardView(title: String, text: String, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.secondary,
@@ -174,7 +189,7 @@ fun AddCardView(title: String, text: String, onClick: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(175.dp)
-                .padding(16.dp),
+                .padding(DEFAULT_PADDING),
         ) {
             Column {
                 Text(text = title, style = MaterialTheme.typography.h5)
@@ -182,13 +197,60 @@ fun AddCardView(title: String, text: String, onClick: () -> Unit) {
             }
         }
     }
-    Spacer(modifier = Modifier.size(16.dp))
+    Spacer(modifier = Modifier.size(DEFAULT_PADDING))
 }
 
 @Preview
 @Composable
-fun PreviewAddCardView() {
-    AddCardView(title = "Title", text = "This is a card view.", onClick = {})
+fun PreviewCardView() {
+    CardView(title = "Title", text = "This is a card view.", onClick = {})
+}
+
+@Composable
+fun TimeBox(value: Int) {
+    Box(
+        modifier = Modifier
+            .padding(DEFAULT_PADDING)
+            .clip(RoundedCornerShape(10.dp))
+            .background(colorResource(id = R.color.color_5))
+    ) {
+        Text(
+            text = value.toString().padStart(2, '0'),
+            style = TextStyle(fontSize = 72.sp, fontFamily = FontFamily.Monospace),
+            modifier = Modifier
+                .padding(DEFAULT_PADDING)
+                .align(Alignment.Center)
+        )
+    }
+}
+
+@Composable
+fun TimeView(time: Date) {
+    val calendar = Calendar.getInstance()
+    calendar.time = time
+    Log.i(TAG, "Currrent time is: ${calendar.time}")
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .clickable {
+                Log.i(TAG, "Time clicked!")
+            }) {
+            TimeBox(calendar.get(Calendar.HOUR_OF_DAY))
+            Text(
+                text = ":",
+                fontSize = 72.sp,
+                fontFamily = FontFamily.Monospace,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+            TimeBox(calendar.get(Calendar.MINUTE))
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewTimeView() {
+    TimeView(Calendar.getInstance().time)
 }
 
 @Composable
@@ -204,7 +266,7 @@ fun AddButton(text: String) {
 
 @Composable
 fun DescriptionTextField(description: String, onValueChange: (String) -> Unit) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(DEFAULT_PADDING)) {
         TextField(
             value = description,
             modifier = Modifier
@@ -212,9 +274,11 @@ fun DescriptionTextField(description: String, onValueChange: (String) -> Unit) {
                 .fillMaxSize(),
             onValueChange = { onValueChange(it) },
         )
-        Box(modifier = Modifier
-            .weight(1f)
-            .fillMaxSize())
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize()
+        )
     }
 }
 
