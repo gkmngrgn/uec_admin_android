@@ -14,6 +14,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -62,6 +63,9 @@ fun MainApp() {
         composable("main") {
             MainContent(navController = navController, event = event)
         }
+        composable("about") {
+            AboutContent(navController = navController)
+        }
         composable("edit_time") {
             TimeContent(navController = navController, event = event)
         }
@@ -84,7 +88,17 @@ fun MainContent(navController: NavHostController, event: Event) = AppTheme {
     }
 
     Column {
-        TopBar(title = R.string.title_default)
+        TopBar(
+            title = R.string.title_default,
+            actions = {
+                IconButton(onClick = { navController.navigate("about") }) {
+                    Icon(
+                        imageVector = Icons.Default.Help,
+                        contentDescription = stringResource(R.string.desc_about)
+                    )
+                }
+            }
+        )
         Column(
             modifier = Modifier
                 .weight(8f)
@@ -130,6 +144,17 @@ fun DescriptionContent(navController: NavHostController, event: Event) = AppThem
         }
     ) {
         DescriptionTextField(description = description, onValueChange = { description = it })
+    }
+}
+
+@Composable
+fun AboutContent(navController: NavHostController) = AppTheme {
+    Scaffold(topBar = {
+        TopBar(title = R.string.title_about, navButton = {
+            BackButton(navController = navController)
+        })
+    }) {
+        Text("TODO: Author, Project Link, Dependencies, License.")
     }
 }
 
