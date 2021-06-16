@@ -6,17 +6,40 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Help
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,18 +54,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigate
 import androidx.navigation.compose.rememberNavController
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.datetime.timePicker
 import com.alageek.ueca.R
 import com.alageek.ueca.models.Event
 import com.alageek.ueca.models.EventSaver
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 const val TAG = "MainActivity"
 val DEFAULT_PADDING = 16.dp
 
+@ExperimentalMaterialApi
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,11 +77,20 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun MainApp() {
     val navController = rememberNavController()
     val event by rememberSaveable(stateSaver = EventSaver) {
-        mutableStateOf(Event(time = Calendar.getInstance().time))
+        mutableStateOf(
+            Event(
+                time = Calendar.getInstance().run {
+                    add(Calendar.HOUR_OF_DAY, 1)
+                    time
+                },
+                timezones = listOf()
+            )
+        )
     }
 
     NavHost(navController = navController, startDestination = "main") {
@@ -81,6 +115,7 @@ fun MainApp() {
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun MainContent(navController: NavHostController, event: Event) = AppTheme {
     if (event.description.isEmpty()) {
@@ -106,18 +141,30 @@ fun MainContent(navController: NavHostController, event: Event) = AppTheme {
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            val textTime = when (event.timezones.size) {
+                0 -> stringResource(id = R.string.text_no_timezone)
+                else -> event.getTimes().joinToString("\n") {
+                    "bla bla bla"
+                }
+            }
+
             CardView(
                 title = stringResource(id = R.string.title_description),
                 text = event.description,
-                onClick = { navController.navigate("edit_description") })
+                onClick = { navController.navigate("edit_description") }
+            )
+
             CardView(
                 title = stringResource(id = R.string.title_time),
-                text = "EDIT TIME",
-                onClick = { navController.navigate("edit_time") })
+                text = textTime,
+                onClick = { navController.navigate("edit_time") }
+            )
+
             CardView(
                 title = stringResource(id = R.string.title_links),
                 text = "EDIT LINKS",
-                onClick = { navController.navigate("edit_links") })
+                onClick = { navController.navigate("edit_links") }
+            )
         }
         Column(
             modifier = Modifier
@@ -140,7 +187,8 @@ fun DescriptionContent(navController: NavHostController, event: Event) = AppThem
                 navButton = {
                     event.description = description
                     BackButton(navController = navController)
-                })
+                }
+            )
         }
     ) {
         DescriptionTextField(description = description, onValueChange = { description = it })
@@ -149,11 +197,16 @@ fun DescriptionContent(navController: NavHostController, event: Event) = AppThem
 
 @Composable
 fun AboutContent(navController: NavHostController) = AppTheme {
-    Scaffold(topBar = {
-        TopBar(title = R.string.title_about, navButton = {
-            BackButton(navController = navController)
-        })
-    }) {
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = R.string.title_about,
+                navButton = {
+                    BackButton(navController = navController)
+                }
+            )
+        }
+    ) {
         Text("TODO: Author, Project Link, Dependencies, License.")
     }
 }
@@ -188,6 +241,7 @@ fun TimeContent(navController: NavHostController, event: Event) = AppTheme {
 
 @Composable
 fun TimezoneContent(navController: NavHostController, event: Event) = AppTheme {
+    var searchText by remember { mutableStateOf("") }
     Scaffold(
         topBar = {
             TopBar(
@@ -196,7 +250,19 @@ fun TimezoneContent(navController: NavHostController, event: Event) = AppTheme {
             )
         }
     ) {
-        Text("not ready yet.")
+        Column(modifier = Modifier.padding(DEFAULT_PADDING)) {
+            OutlinedTextField(
+                value = searchText,
+                onValueChange = { searchText = it },
+                label = { Text("Search") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            LazyColumn {
+                items(5) { index ->
+                    Text(text = "Item: $index")
+                }
+            }
+        }
     }
 }
 
@@ -206,7 +272,8 @@ fun LinksContent(navController: NavHostController) = AppTheme {
         topBar = {
             TopBar(
                 title = R.string.title_links,
-                navButton = { BackButton(navController = navController) })
+                navButton = { BackButton(navController = navController) }
+            )
         }
     ) {
         Text(text = "Edit Links Content")
@@ -231,23 +298,24 @@ fun TopBar(
 }
 
 @Composable
-fun BackButton(navController: NavHostController) = IconButton(onClick = {
-    navController.popBackStack()
-}) {
+fun BackButton(navController: NavHostController) = IconButton(
+    onClick = {
+        navController.popBackStack()
+    }
+) {
     Icon(
         imageVector = Icons.Filled.ArrowBack,
         contentDescription = stringResource(R.string.desc_back)
     )
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun CardView(title: String, text: String, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.secondary,
-        modifier = Modifier.clickable {
-            onClick()
-        }
+        onClick = onClick
     ) {
         Box(
             modifier = Modifier
@@ -264,6 +332,7 @@ fun CardView(title: String, text: String, onClick: () -> Unit) {
     Spacer(modifier = Modifier.size(DEFAULT_PADDING))
 }
 
+@ExperimentalMaterialApi
 @Preview
 @Composable
 fun PreviewCardView() {
@@ -296,17 +365,18 @@ fun TimeView(time: Date) {
     calendar.time = time
     Log.i(TAG, "Currrent time is: ${calendar.time}")
 
-
     Column(modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .clickable {
-                MaterialDialog(context).show {
-                    timePicker { _, _ ->
-                        Log.i(TAG, "I am here.")
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .clickable {
+                    MaterialDialog(context).show {
+                        timePicker { _, _ ->
+                            Log.i(TAG, "I am here.")
+                        }
                     }
                 }
-            }) {
+        ) {
             TimeBox(calendar.get(Calendar.HOUR_OF_DAY))
             Text(
                 text = ":",
@@ -332,7 +402,7 @@ fun AddButton(text: String) {
         modifier = Modifier
             .fillMaxSize(),
     ) {
-        Text(text = text.toUpperCase(Locale.ROOT))
+        Text(text = text.uppercase(Locale.ROOT))
     }
 }
 

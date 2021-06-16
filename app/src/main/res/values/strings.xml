@@ -11,4 +11,5 @@
     <string name="title_about">About UECA</string>
     <string name="desc_about">About UECA</string>
     <string name="desc_timezone">Edit Timezones</string>
+    <string name="text_no_timezone">No timezone specified yet.</string>
 </resources>
