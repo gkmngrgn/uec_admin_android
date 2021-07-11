@@ -1,5 +1,8 @@
 package com.alageek.ueca.ui
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
@@ -51,6 +54,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -60,8 +64,8 @@ import com.afollestad.materialdialogs.datetime.timePicker
 import com.alageek.ueca.R
 import com.alageek.ueca.models.Event
 import com.alageek.ueca.models.EventSaver
-import java.util.Calendar
-import java.util.Date
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 const val TAG = "MainActivity"
@@ -84,10 +88,7 @@ fun MainApp() {
     val event by rememberSaveable(stateSaver = EventSaver) {
         mutableStateOf(
             Event(
-                time = Calendar.getInstance().run {
-                    add(Calendar.HOUR_OF_DAY, 1)
-                    time
-                },
+                time = LocalDateTime.now(),
                 timezones = listOf()
             )
         )
@@ -141,7 +142,9 @@ fun MainContent(navController: NavHostController, event: Event) = AppTheme {
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val textTime = when (event.timezones.size) {
+            val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+            val dateStr = event.time.format(dateFormatter)
+            val textTime = "$dateStr\n" + when (event.timezones.size) {
                 0 -> stringResource(id = R.string.text_no_timezone)
                 else -> event.getTimes().joinToString("\n") {
                     "bla bla bla"
@@ -197,6 +200,7 @@ fun DescriptionContent(navController: NavHostController, event: Event) = AppThem
 
 @Composable
 fun AboutContent(navController: NavHostController) = AppTheme {
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             TopBar(
@@ -207,7 +211,33 @@ fun AboutContent(navController: NavHostController) = AppTheme {
             )
         }
     ) {
-        Text("TODO: Author, Project Link, Dependencies, License.")
+        Column(
+            modifier = Modifier
+                .padding(DEFAULT_PADDING)
+                .fillMaxSize()
+        ) {
+            Text(text = stringResource(id = R.string.about_content))
+            Text(
+                text = stringResource(id = R.string.about_title_authors),
+                fontSize = 25.sp,
+                modifier = Modifier.padding(top = 20.dp)
+            )
+            Text(text = "- Gökmen Görgen, <gkmngrgn@gmail.com>")
+            Text(
+                text = stringResource(id = R.string.about_title_license),
+                fontSize = 25.sp,
+                modifier = Modifier.padding(top = 20.dp)
+            )
+            Text(text = stringResource(id = R.string.about_content_license))
+            Button(
+                onClick = {
+                    linkToWebpage(context = context)
+                },
+                modifier = Modifier.padding(top = 20.dp)
+            ) {
+                Text(text = "UECA v1.0.0")
+            }
+        }
     }
 }
 
@@ -235,6 +265,7 @@ fun TimeContent(navController: NavHostController, event: Event) = AppTheme {
                 .fillMaxSize()
         ) {
             TimeView(time = event.time)
+            Text(text = "no timezone specified.")
         }
     }
 }
@@ -358,12 +389,9 @@ fun TimeBox(value: Int) {
 }
 
 @Composable
-fun TimeView(time: Date) {
-    val calendar = Calendar.getInstance()
+fun TimeView(time: LocalDateTime) {
     val context = LocalContext.current
-
-    calendar.time = time
-    Log.i(TAG, "Currrent time is: ${calendar.time}")
+    Log.i(TAG, "Current time is: $time")
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -377,14 +405,14 @@ fun TimeView(time: Date) {
                     }
                 }
         ) {
-            TimeBox(calendar.get(Calendar.HOUR_OF_DAY))
+            TimeBox(time.hour)
             Text(
                 text = ":",
                 fontSize = 72.sp,
                 fontFamily = FontFamily.Monospace,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
-            TimeBox(calendar.get(Calendar.MINUTE))
+            TimeBox(time.minute)
         }
     }
 }
@@ -392,7 +420,7 @@ fun TimeView(time: Date) {
 @Preview
 @Composable
 fun PreviewTimeView() {
-    TimeView(Calendar.getInstance().time)
+    TimeView(LocalDateTime.now())
 }
 
 @Composable
@@ -428,4 +456,10 @@ fun DescriptionTextField(description: String, onValueChange: (String) -> Unit) {
 @Composable
 fun PreviewDescriptionTextField() {
     DescriptionTextField(description = "A description test.", onValueChange = {})
+}
+
+fun linkToWebpage(context: Context) {
+    val openURL = Intent(Intent.ACTION_VIEW)
+    openURL.data = Uri.parse("https://github.com/gkmngrgn/ueca/releases")
+    ContextCompat.startActivity(context, openURL, null)
 }

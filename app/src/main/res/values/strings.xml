@@ -9,6 +9,10 @@
     <string name="default_description">We will be live today; you are all invited!</string>
     <string name="title_timezone">Timezones</string>
     <string name="title_about">About UECA</string>
+    <string name="about_content">UECA is a useless mobile application that helps you write your event announcements. You can add the times with multiple time zones, copy the message and share it easily.</string>
+    <string name="about_content_license">The app is licensed by MIT.</string>
+    <string name="about_title_authors">AUTHORS</string>
+    <string name="about_title_license">LICENSE</string>
     <string name="desc_about">About UECA</string>
     <string name="desc_timezone">Edit Timezones</string>
     <string name="text_no_timezone">No timezone specified yet.</string>

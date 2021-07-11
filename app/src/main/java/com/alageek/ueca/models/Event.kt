@@ -3,10 +3,10 @@ package com.alageek.ueca.models
 import android.os.Parcelable
 import androidx.compose.runtime.saveable.listSaver
 import kotlinx.parcelize.Parcelize
-import java.util.Date
+import java.time.LocalDateTime
 
 @Parcelize
-data class Event(var description: String = "", var time: Date, var timezones: List<Int>) :
+data class Event(var description: String = "", var time: LocalDateTime, var timezones: List<Int>) :
     Parcelable {
     fun getTimes(): List<Int> {
         val times = listOf<Int>()
@@ -17,5 +17,11 @@ data class Event(var description: String = "", var time: Date, var timezones: Li
 
 val EventSaver = listSaver<Event, Any>(
     save = { listOf(it.description, it.time, it.timezones) },
-    restore = { Event(it[0] as String, it[1] as Date, (it[2] as List<*>).filterIsInstance<Int>()) }
+    restore = {
+        Event(
+            it[0] as String,
+            it[1] as LocalDateTime,
+            (it[2] as List<*>).filterIsInstance<Int>()
+        )
+    }
 )
